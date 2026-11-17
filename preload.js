@@ -6,5 +6,5 @@ contextBridge.exposeInMainWorld('api', {
   chat: p => ipc.invoke('chat', p),
   feedback: f => ipc.invoke('feedback', f),
   delMemory: i => ipc.invoke('delMemory', i),
-  importKnowledge: () => ipc.invoke('importKnowledge')
+  onTok: cb => ipc.on('tok', (_, t) => cb(t))
 });

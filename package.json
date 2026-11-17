@@ -1,19 +1,23 @@
 {
   "name": "froggpt",
-  "version": "0.1.0",
-  "description": "FrogGPT - AI Art Director (online & offline)",
+  "version": "0.2.0",
+  "description": "FrogGPT - AI Art Director (model tertanam, 100% offline)",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build-kb": "node tools/build-kb.js knowledge-src resources/knowledge.db",
     "dist": "electron-builder --win --publish never",
-    "gen-knowledge": "node tools/gen-knowledge.js"
+    "postinstall": "electron-builder install-app-deps"
   },
+  "dependencies": { "better-sqlite3": "^11.0.0", "node-llama-cpp": "^3.0.0" },
   "devDependencies": { "electron": "^31.0.0", "electron-builder": "^24.13.3" },
   "build": {
     "appId": "com.froggpt.app",
     "productName": "FrogGPT",
-    "files": ["main.js", "preload.js", "src/**", "renderer/**", "knowledge/**"],
-    "win": { "target": ["nsis", "portable"] },
+    "files": ["main.js", "preload.js", "src/**", "renderer/**"],
+    "asarUnpack": ["node_modules/node-llama-cpp/**", "node_modules/@node-llama-cpp/**", "node_modules/better-sqlite3/**"],
+    "extraResources": [{ "from": "resources", "to": "data" }],
+    "win": { "target": ["nsis"] },
     "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
   }
 }

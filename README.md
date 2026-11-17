@@ -1,28 +1,23 @@
-# FrogGPT — AI Art Director untuk Windows
+# FrogGPT — AI Art Director (model tertanam, 100% offline)
 
-Aplikasi desktop (Electron) berfokus pada desain: brief, moodboard, art direction, kritik.
-- **Online**: Claude API (isi API key di Pengaturan).
-- **Offline**: model lokal lewat [Ollama](https://ollama.com) (`ollama pull qwen2.5:7b`).
-- **Otomatis**: online bila ada internet + API key, selain itu offline.
+Aplikasi desktop Windows (Electron). Tidak memakai Ollama, Anthropic, atau server apa pun.
+- **Model AI**: file `.gguf` dijalankan langsung di dalam aplikasi lewat `node-llama-cpp`.
+- **Pengetahuan**: database SQLite FTS5 (`knowledge.db`) ikut terpasang; pencarian BM25 tetap cepat untuk jutaan entri.
+- **Memori & koreksi**: tersimpan di `%APPDATA%/FrogGPT/frogdata/`.
 
-## Jalankan
+## Bangun EXE (GitHub Actions)
+1. Taruh sumber pengetahuan di `knowledge-src/` (`.json`, `.jsonl`, `.md`, `.txt`).
+2. Push tag, mis. `v0.2.0`. Workflow membangun `knowledge.db`, mengunduh model Qwen2.5-1.5B-Instruct (Q4_K_M), lalu mengemasnya ke installer.
+
+## Jalankan lokal
 ```
 npm install
+npm run build-kb
+# letakkan model di resources/model/model.gguf
 npm start
 ```
-## Bangun EXE
-Lokal: `npm run dist` → hasil di `dist/` (installer + portable).
-GitHub: push tag `v0.1.0` → Actions membangun EXE dan melampirkannya ke Release.
+Model lain: taruh file `.gguf` apa pun di `resources/model/` (cek lisensinya sebelum dibagikan).
 
-## Basis pengetahuan 5000 entri
-`knowledge/seed.json` hanya 12 contoh. Untuk 5000 entri:
-```
-ANTHROPIC_API_KEY=sk-ant-... npm run gen-knowledge -- --expand --per 20
-```
-Skrip memperluas `tools/topics.json` (12 kategori × ~30 subtopik) lalu menulis ±20 entri per subtopik ke `knowledge/generated/`. Bisa dilanjutkan jika terhenti. **Tinjau hasilnya** sebelum dirilis, karena ditulis oleh LLM.
-
-## Cara "belajar"
-Model tidak dilatih ulang. Peningkatannya lewat: (1) memori fakta pengguna, (2) pelajaran dari 👍/👎+koreksi, (3) pencarian pengetahuan desain, (4) pass self-check sebelum jawaban tampil.
-
-## Data pengguna
-`%APPDATA%/FrogGPT/frogdata/` (chats, memory, lessons, settings).
+## Batas
+- Installer NSIS dan aset GitHub Release maksimal ±2 GB (model + database + Electron).
+- Model kecil (1–3B) lemah di bahasa Indonesia dan penalaran; jawaban perlu ditinjau.
