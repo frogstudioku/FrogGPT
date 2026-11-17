@@ -1,4 +1,5 @@
 const $ = s => document.querySelector(s);
+let stream = '';
 let S = { chats: [], settings: {}, memory: [], kcount: 0, online: true }, cur = null, busy = false, viewName = 'chats';
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const md = t => esc(t).replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>').replace(/`([^`\n]+)`/g, '<code>$1</code>')
@@ -6,13 +7,10 @@ const md = t => esc(t).replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code>
 const save = () => api.saveChats(S.chats);
 const chat = () => S.chats.find(c => c.id === cur);
 
-function modeLabel() {
-  const m = S.settings.mode;
-  return m === 'auto' ? `Otomatis · ${S.online && S.settings.apiKey ? 'Online' : 'Offline'}` : m === 'online' ? 'Online' : 'Offline';
-}
+function modeLabel() { return 'Model tertanam · offline'; }
 function renderSide() {
   $('#recents').innerHTML = S.chats.map(c => `<button class="nav rc ${c.id === cur ? 'on' : ''}" data-id="${c.id}"><span>${esc(c.title)}</span><span class="x" data-del="${c.id}">✕</span></button>`).join('');
-  $('#modeChip').textContent = modeLabel(); $('#status').textContent = `${S.kcount} pengetahuan · ${S.memory.length} memori`;
+  $('#modeChip').textContent = modeLabel(); $('#status').textContent = `${(S.kcount || 0).toLocaleString('id-ID')} pengetahuan · ${S.memory.length} memori`;
 }
 function render() {
   renderSide(); const v = $('#view'); $('#composer').style.display = viewName === 'chats' ? '' : 'none';
@@ -26,8 +24,8 @@ function render() {
   }
   v.innerHTML = '<div class="wrap">' + c.messages.map((m, i) => m.role === 'user'
     ? `<div class="msg user">${esc(m.content)}</div>`
-    : `<div class="msg ai"><div class="body ${m.error ? 'err' : ''}">${md(m.content)}</div>${m.error ? '' : `<div class="tools"><button data-copy="${i}">Salin</button><button data-up="${i}">👍</button><button data-down="${i}">👎 Koreksi</button><button data-retry="${i}">Ulangi</button>${m.sources?.length ? `<span>· dasar: ${esc(m.sources.slice(0, 3).join(', '))}</span>` : ''}</div>`}</div>`).join('')
-    + (busy ? '<div class="msg ai"><div class="body">Sedang berpikir…</div></div>' : '') + '</div>';
+    : `<div class="msg ai"><div class="body ${m.error ? 'err' : ''}">${md(m.content)}</div>${m.error ? `<div class="tools"><button data-settings="1">Buka Pengaturan</button><button data-retry="${i}">Coba lagi</button></div>` : `<div class="tools"><button data-copy="${i}">Salin</button><button data-up="${i}">👍</button><button data-down="${i}">👎 Koreksi</button><button data-retry="${i}">Ulangi</button>${m.sources?.length ? `<span>· dasar: ${esc(m.sources.slice(0, 3).join(', '))}</span>` : ''}</div>`}</div>`).join('')
+    + (busy ? `<div class="msg ai"><div class="body" id="live">${stream ? md(stream) : 'Sedang berpikir…'}</div></div>` : '') + '</div>';
   v.scrollTop = v.scrollHeight;
 }
 function newChat() { cur = null; viewName = 'chats'; render(); $('#input').focus(); }
@@ -35,9 +33,9 @@ async function send(text, regen) {
   if (busy || (!regen && !text.trim())) return;
   if (!cur) { const c = { id: 'c' + Date.now(), title: text.slice(0, 40), messages: [] }; S.chats.unshift(c); cur = c.id; }
   const c = chat(); if (!regen) c.messages.push({ role: 'user', content: text });
-  busy = true; $('#send').disabled = true; render();
+  busy = true; stream = ''; $('#send').disabled = true; render();
   const r = await api.chat({ messages: c.messages.filter(m => !m.error) });
-  busy = false; $('#send').disabled = false;
+  busy = false; stream = ''; $('#send').disabled = false;
   c.messages.push(r.error ? { role: 'assistant', content: r.error, error: true } : { role: 'assistant', content: r.text, sources: r.sources });
   save(); render(); setTimeout(async () => { S.memory = (await api.load()).memory; renderSide(); }, 4000);
 }
@@ -51,6 +49,7 @@ document.addEventListener('click', e => {
   const t = e.target, d = t.dataset, rc = t.closest('.rc'), c = chat();
   if (d.del) { S.chats = S.chats.filter(x => x.id !== d.del); if (cur === d.del) cur = null; save(); return render(); }
   if (rc) { cur = rc.dataset.id; viewName = 'chats'; return render(); }
+  if (d.settings) return openSettings();
   if (d.q) return send(d.q);
   if (d.copy) return navigator.clipboard.writeText(c.messages[d.copy].content);
   if (d.up || d.down) { const i = +(d.up || d.down), up = d.up !== undefined; let note = '';
@@ -62,20 +61,15 @@ document.addEventListener('click', e => {
 function openSettings() {
   const s = S.settings, dl = $('#dlg');
   dl.innerHTML = `<h2>Pengaturan</h2>
-  <label>Mode</label><select id="s_mode"><option value="auto">Otomatis (online jika ada internet &amp; API key)</option><option value="online">Online (API)</option><option value="offline">Offline (Ollama lokal)</option></select>
-  <label>API key online</label><input type="password" id="s_key" value="${esc(s.apiKey)}" placeholder="sk-ant-...">
-  <label>Model online</label><input type="text" id="s_om" value="${esc(s.onlineModel)}">
-  <label>Model offline (Ollama)</label><input type="text" id="s_lm" value="${esc(s.ollamaModel)}">
-  <div class="row"><input type="checkbox" id="s_chk" ${s.selfCheck ? 'checked' : ''}><label for="s_chk" style="margin:0;font-weight:400">Periksa &amp; perbaiki jawaban sendiri sebelum tampil</label></div>
+  <p style="color:var(--mute)">Model AI dan ${(S.kcount || 0).toLocaleString('id-ID')} entri pengetahuan sudah tertanam. Semuanya berjalan di komputer ini tanpa internet.</p>
+  <div class="row"><input type="checkbox" id="s_chk" ${s.selfCheck ? 'checked' : ''}><label for="s_chk" style="margin:0;font-weight:400">Perbaiki ejaan &amp; tata bahasa jawaban sebelum tampil (lebih lambat)</label></div>
   <div class="row"><input type="checkbox" id="s_mem" ${s.memory ? 'checked' : ''}><label for="s_mem" style="margin:0;font-weight:400">Ingat preferensi dari chat</label></div>
-  <label>Memori (${S.memory.length})</label><div style="max-height:130px;overflow:auto">${S.memory.map((m, i) => `<div class="mem"><span>${esc(m.text)}</span><button class="icon" data-m="${i}">✕</button></div>`).join('') || '<span style="color:var(--mute)">Belum ada.</span>'}</div>
-  <label>Pengetahuan desain: ${S.kcount} entri</label><button class="btn ghost" id="imp">Impor file pengetahuan (.json)</button>
+  <label>Memori (${S.memory.length})</label><div style="max-height:160px;overflow:auto">${S.memory.map((m, i) => `<div class="mem"><span>${esc(m.text)}</span><button class="icon" data-m="${i}">✕</button></div>`).join('') || '<span style="color:var(--mute)">Belum ada.</span>'}</div>
   <div class="row" style="justify-content:flex-end"><button class="btn ghost" id="cl">Batal</button><button class="btn" id="sv">Simpan</button></div>`;
-  $('#s_mode').value = s.mode; if (!dl.open) dl.showModal();
-  $('#cl').onclick = () => dl.close(); $('#imp').onclick = async () => { S.kcount = await api.importKnowledge(); renderSide(); openSettings(); };
+  if (!dl.open) dl.showModal();
+  $('#cl').onclick = () => dl.close();
   dl.querySelectorAll('[data-m]').forEach(b => b.onclick = async () => { S.memory = await api.delMemory(+b.dataset.m); openSettings(); });
-  $('#sv').onclick = async () => { S.settings = { ...s, mode: $('#s_mode').value, apiKey: $('#s_key').value.trim(), onlineModel: $('#s_om').value, ollamaModel: $('#s_lm').value, selfCheck: $('#s_chk').checked, memory: $('#s_mem').checked };
-    await api.saveSettings(S.settings); dl.close(); renderSide(); };
+  $('#sv').onclick = async () => { S.settings = { ...s, selfCheck: $('#s_chk').checked, memory: $('#s_mem').checked }; await api.saveSettings(S.settings); dl.close(); };
 }
-addEventListener('online', () => { S.online = true; renderSide(); }); addEventListener('offline', () => { S.online = false; renderSide(); });
+api.onTok(t => { stream += t; const l = $('#live'); if (l) { l.innerHTML = md(stream); $('#view').scrollTop = $('#view').scrollHeight; } });
 api.load().then(d => { S = d; render(); });
