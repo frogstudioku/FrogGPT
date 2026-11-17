@@ -1,0 +1,14 @@
+{
+ "Tipografi": ["klasifikasi huruf","kerning & tracking","pairing font","type scale","tipografi editorial","tipografi aksara Latin vs non-Latin"],
+ "Warna": ["teori warna","palet monokrom","kontras & aksesibilitas","warna cetak CMYK vs layar RGB","tren warna","warna dalam budaya Asia Tenggara"],
+ "Layout & Komposisi": ["grid sistem","hierarki visual","keseimbangan & ritme","whitespace","layout poster","layout editorial"],
+ "Branding": ["identitas visual","logo & varian","brand guideline","brand voice visual","rebranding","brand untuk UMKM"],
+ "UI/UX": ["design system","aksesibilitas","mobile UI","dashboard","microinteraction","riset pengguna"],
+ "Moodboard & Konsep": ["membangun konsep kreatif","moodboard untuk brand","referensi & orisinalitas","storytelling visual","visual metaphor","presentasi konsep ke klien"],
+ "Brief & Strategi": ["menulis creative brief","menggali kebutuhan klien","target audiens & persona","positioning","scope & revisi","feedback dan kritik desain"],
+ "Fotografi & Video": ["art direction foto produk","fashion & lifestyle","pencahayaan","color grading","storyboard","motion graphics"],
+ "Packaging & Cetak": ["struktur kemasan","finishing cetak","kertas & material","label & regulasi","kemasan berkelanjutan","unboxing"],
+ "Ilustrasi & 3D": ["gaya ilustrasi","karakter & maskot","ikonografi","3D & render","pola & tekstur","generative art"],
+ "Sejarah & Gerakan": ["Bauhaus","Swiss/International Style","Art Deco","Brutalism & neo-brutalism","desain Indonesia & Nusantara","postmodern & Memphis"],
+ "Proses & Bisnis": ["workflow kreatif","kolaborasi dengan developer","penetapan harga jasa desain","portofolio","hak cipta & lisensi","AI dalam proses desain"]
+}
