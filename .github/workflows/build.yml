@@ -11,6 +11,17 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm install
+      - run: npm run build-kb
+      - uses: actions/cache@v4
+        id: model
+        with: { path: resources/model, key: model-qwen2.5-1.5b-instruct-q4km }
+      - if: steps.model.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p resources/model
+          curl -L --retry 5 -o resources/model/model.gguf "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+      - shell: bash
+        run: test "$(stat -c%s resources/model/model.gguf)" -gt 500000000
       - run: npm run dist
       - uses: actions/upload-artifact@v4
         with: { name: FrogGPT-win, path: dist/*.exe }
