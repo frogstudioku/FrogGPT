@@ -27,10 +27,16 @@ function ask(file, system, messages, { max = 900, temp = 0.6, onToken } = {}) {
   const run = async () => {
     await load(file);
     const last = messages[messages.length - 1];
-    const session = new lib.LlamaChatSession({ contextSequence: ctx.getSequence() });
-    session.setChatHistory(toHistory(system, messages.slice(0, -1)));
-    try { return await session.prompt(last.content, { maxTokens: max, temperature: temp, onTextChunk: onToken || undefined }); }
-    finally { session.dispose(); }
+    const seq = ctx.getSequence();
+    let session;
+    try {
+      session = new lib.LlamaChatSession({ contextSequence: seq, autoDisposeSequence: true });
+      session.setChatHistory(toHistory(system, messages.slice(0, -1)));
+      return await session.prompt(last.content, { maxTokens: max, temperature: temp, onTextChunk: onToken || undefined });
+    } finally {
+      // Wajib mengembalikan jalur (sequence); jika tidak, pesan berikutnya gagal: "No sequences left".
+      if (session) session.dispose({ disposeSequence: true }); else seq.dispose();
+    }
   };
   const p = queue.then(run, run); queue = p.catch(() => {}); return p;
 }
