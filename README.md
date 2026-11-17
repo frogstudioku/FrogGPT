@@ -12,7 +12,8 @@ Aplikasi desktop Windows (Electron). Tidak memakai Ollama, Anthropic, atau serve
 ## Jalankan lokal
 ```
 npm install
-npm run build-kb
+npm run build-kb                 # membuat resources/knowledge.db (jalankan SEBELUM rebuild)
+npm run rebuild                   # mengompilasi modul native untuk Electron (sekali)
 # letakkan model di resources/model/model.gguf
 npm start
 ```
