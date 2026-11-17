@@ -1,0 +1,19 @@
+{
+  "name": "froggpt",
+  "version": "0.1.0",
+  "description": "FrogGPT - AI Art Director (online & offline)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never",
+    "gen-knowledge": "node tools/gen-knowledge.js"
+  },
+  "devDependencies": { "electron": "^31.0.0", "electron-builder": "^24.13.3" },
+  "build": {
+    "appId": "com.froggpt.app",
+    "productName": "FrogGPT",
+    "files": ["main.js", "preload.js", "src/**", "renderer/**", "knowledge/**"],
+    "win": { "target": ["nsis", "portable"] },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
+  }
+}
