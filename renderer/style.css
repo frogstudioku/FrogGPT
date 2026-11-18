@@ -14,8 +14,8 @@ aside{width:260px;flex:none;display:flex;flex-direction:column;padding:18px 12px
 aside.hide{margin-left:-276px}
 .brand{display:flex;align-items:center;gap:10px;padding:0 8px 16px;font:700 20px var(--font);letter-spacing:-.02em}
 .mark{width:34px;height:34px;border-radius:10px;box-shadow:0 4px 14px #f77a1e66}
-.cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:999px;padding:11px 14px;margin-bottom:12px;color:#fff;font-weight:600;background:linear-gradient(135deg,var(--acc2),var(--acc));box-shadow:0 8px 22px #f77a1e55}
-.cta:hover{filter:brightness(1.07)}
+.cta{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-radius:16px;padding:9px 12px;margin-bottom:4px;color:var(--ink);font-weight:600;background:none}
+.cta:hover{background:var(--glass2)}
 .nav{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;padding:9px 12px;border-radius:16px;color:var(--ink)}
 .nav:hover{background:var(--glass2)}.nav.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#fff;box-shadow:0 6px 18px #f77a1e4d}
 .label{color:var(--mute);font-size:12px;padding:16px 12px 4px}#recents{flex:1;overflow:auto;margin-bottom:6px}
