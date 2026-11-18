@@ -1,5 +1,5 @@
 // Otak FrogGPT: model tertanam + pengetahuan SQLite FTS5 + memori pengguna + pelajaran dari koreksi
-const fs = require('fs'), path = require('path');
+const fs = require('fs'), path = require('path'), os = require('os');
 const llm = require('./llm');
 let D, RES, db = null, kcount = 0;
 const F = n => path.join(D, n);
@@ -20,7 +20,37 @@ function init(userDir, resDir) {
     kcount = db.prepare('select n from meta').get().n;
   } catch { db = null; kcount = 0; }
 }
-const modelFile = () => { try { const f = fs.readdirSync(path.join(RES, 'model')).find(x => x.endsWith('.gguf')); return f && path.join(RES, 'model', f); } catch { return null; } };
+const CATALOG = [
+  { id: 'ringan', name: 'Qwen2.5 1.5B', uri: 'hf:Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M', size: 1.1, ram: 4, license: 'Apache-2.0', desc: 'Ringan & cepat, cocok laptop biasa' },
+  { id: 'seimbang', name: 'Qwen2.5 3B', uri: 'hf:Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M', size: 2.1, ram: 8, license: 'Lisensi riset (cek dulu untuk komersial)', desc: 'Lebih rapi dari 1.5B' },
+  { id: 'pintar', name: 'Qwen2.5 7B', uri: 'hf:Qwen/Qwen2.5-7B-Instruct-GGUF:Q4_K_M', size: 4.7, ram: 16, license: 'Apache-2.0', desc: 'Jauh lebih pintar; lambat tanpa GPU' }
+];
+function modelFile() {
+  const st = rd('models.json', {});
+  if (st.current && fs.existsSync(st.current)) return st.current;
+  try { const f = fs.readdirSync(path.join(RES, 'model')).find(x => x.endsWith('.gguf')); return f ? path.join(RES, 'model', f) : null; } catch { return null; }
+}
+const curModelName = () => { const f = modelFile(); return f ? path.basename(f) : null; };
+function models() {
+  const st = rd('models.json', {}), installed = {};
+  for (const [k, v] of Object.entries(st.installed || {})) if (fs.existsSync(v)) installed[k] = v;
+  const ram = Math.round(os.totalmem() / 1073741824);
+  return { catalog: CATALOG, installed, current: modelFile(), ramGB: ram, rec: ram >= 16 ? 'pintar' : ram >= 8 ? 'seimbang' : 'ringan' };
+}
+async function downloadModel(id, onProgress) {
+  const c = CATALOG.find(x => x.id === id); if (!c) throw new Error('Model tidak dikenal.');
+  let file;
+  try { file = await llm.download(c.uri, path.join(D, 'models'), onProgress); }
+  catch (e) { throw new Error('Gagal mengunduh model (butuh internet sekali): ' + e.message); }
+  const st = rd('models.json', {}); st.installed = { ...(st.installed || {}), [id]: file }; st.current = file; wr('models.json', st);
+  return { file };
+}
+function useModel(id) {
+  const st = rd('models.json', {}), f = (st.installed || {})[id];
+  if (!f || !fs.existsSync(f)) throw new Error('File model tidak ditemukan. Unduh ulang.');
+  st.current = f; wr('models.json', st);
+}
+function setModelFile(f) { const st = rd('models.json', {}); st.current = f; wr('models.json', st); }
 
 // Pencarian BM25 di SQLite FTS5: cepat walau jutaan entri.
 function kbSearch(q, n = 4) {
@@ -40,7 +70,7 @@ function memSearch(q, items, n) {
 async function chat({ messages }, onToken) {
   const s = { ...DEFAULTS, ...rd('settings.json', {}) };
   const file = modelFile();
-  if (!file) throw new Error('File model AI (.gguf) tidak ditemukan di ' + path.join(RES || '', 'model') + '. Pasang ulang aplikasi, atau letakkan file .gguf di folder itu.');
+  if (!file) throw new Error('Belum ada model AI. Buka Pengaturan, lalu pilih "Ganti model".');
   const q = messages.filter(m => m.role === 'user').slice(-2).map(m => m.content).join(' ');
   const kn = kbSearch(q, 4);
   const rel = s.memory ? memSearch(q, rd('memory.json', []), 5) : [], lessons = rd('lessons.json', []).slice(-6);
@@ -82,6 +112,6 @@ function feedback({ up, user, answer, note }) {
   wr('lessons.json', l.slice(-100));
 }
 function delMemory(i) { const m = rd('memory.json', []); m.splice(i, 1); wr('memory.json', m); return m; }
-function loadAll() { return { chats: rd('chats.json', []), settings: { ...DEFAULTS, ...rd('settings.json', {}) }, memory: rd('memory.json', []), kcount }; }
+function loadAll() { return { chats: rd('chats.json', []), settings: { ...DEFAULTS, ...rd('settings.json', {}) }, memory: rd('memory.json', []), kcount, model: curModelName() }; }
 
-module.exports = { init, chat, feedback, delMemory, loadAll, wr, kbSearch };
+module.exports = { models, downloadModel, useModel, setModelFile, init, chat, feedback, delMemory, loadAll, wr, kbSearch };

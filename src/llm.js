@@ -1,14 +1,26 @@
-// Mesin AI tertanam: menjalankan file .gguf langsung di aplikasi (node-llama-cpp), tanpa server & tanpa internet.
-let lib, ctx, queue = Promise.resolve();
+// Mesin AI tertanam: menjalankan file .gguf langsung di aplikasi (node-llama-cpp), tanpa server.
+let lib, llama, model, ctx, loaded = null, queue = Promise.resolve();
+
+async function unload() { try { await ctx?.dispose(); await model?.dispose(); } catch {} ctx = model = null; loaded = null; }
 
 async function load(file) {
-  if (ctx) return;
+  if (ctx && loaded === file) return;      // model berganti -> muat ulang otomatis
+  await unload();
   try {
-    lib = await import('node-llama-cpp');
-    const llama = await lib.getLlama();
-    const model = await llama.loadModel({ modelPath: file });
+    lib = lib || await import('node-llama-cpp');
+    llama = llama || await lib.getLlama();
+    model = await llama.loadModel({ modelPath: file });
     ctx = await model.createContext({ contextSize: 4096 });
-  } catch (e) { throw new Error('Gagal memuat model AI: ' + e.message); }
+    loaded = file;
+  } catch (e) { await unload(); throw new Error('Gagal memuat model AI: ' + e.message + ' (jika RAM kurang, pilih model yang lebih kecil).'); }
+}
+
+// Unduh model dari Hugging Face (alamat "hf:pengguna/repo:kuantisasi"); mendukung model yang terpecah beberapa file.
+async function download(uri, dir, onProgress) {
+  lib = lib || await import('node-llama-cpp');
+  const d = await lib.createModelDownloader({ modelUri: uri, dirPath: dir,
+    onProgress: s => { if (onProgress && s.totalSize) onProgress(s.downloadedSize / s.totalSize); } });
+  return d.download();
 }
 
 // Satukan pesan berurutan dari peran yang sama agar riwayat selalu bergantian user/model.
@@ -40,4 +52,4 @@ function ask(file, system, messages, { max = 900, temp = 0.6, onToken } = {}) {
   };
   const p = queue.then(run, run); queue = p.catch(() => {}); return p;
 }
-module.exports = { ask };
+module.exports = { ask, download };
