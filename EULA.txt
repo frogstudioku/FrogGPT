@@ -1,0 +1,53 @@
+PERJANJIAN LISENSI PENGGUNA AKHIR (EULA)
+FrogGPT - AI Art Director
+
+Hak Cipta (c) 2026 Ari Fitriansyah. Seluruh hak dilindungi.
+
+Harap baca perjanjian ini dengan saksama. Dengan menginstal, menyalin, atau menggunakan FrogGPT, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh isi perjanjian ini. Jika Anda tidak setuju, jangan instal atau gunakan perangkat lunak ini.
+
+1. PIHAK DAN DEFINISI
+"Pengembang" adalah Ari Fitriansyah. "Perangkat Lunak" adalah FrogGPT, termasuk antarmuka, kode, basis pengetahuan desain bawaan, nama, logo, dan ilustrasi yang disertakan. "Pengguna" adalah Anda, orang atau badan yang memasang dan menggunakan Perangkat Lunak.
+
+2. PEMBERIAN LISENSI
+Pengembang memberi Anda lisensi yang terbatas, non-eksklusif, tidak dapat dialihkan, dan dapat dicabut untuk memasang dan menggunakan Perangkat Lunak pada perangkat yang Anda miliki atau kendalikan, untuk keperluan pribadi atau operasional internal bisnis Anda. Lisensi ini adalah lisensi penggunaan, bukan penjualan atau pengalihan hak milik.
+
+3. PEMBATASAN
+Tanpa izin tertulis dari Pengembang, Anda tidak boleh:
+a. menyalin, mendistribusikan ulang, menjual, menyewakan, meminjamkan, atau mensublisensikan Perangkat Lunak;
+b. memodifikasi, membuat karya turunan, atau menggunakan nama, logo, dan ilustrasi FrogGPT untuk produk lain;
+c. melakukan rekayasa balik, dekompilasi, atau pembongkaran Perangkat Lunak, kecuali sejauh hukum yang berlaku secara tegas mengizinkannya;
+d. menghapus atau mengubah pemberitahuan hak cipta dan kepemilikan;
+e. menggunakan Perangkat Lunak untuk tujuan yang melanggar hukum atau melanggar hak pihak lain.
+
+4. KEPEMILIKAN
+Seluruh hak, kepemilikan, dan kepentingan atas Perangkat Lunak tetap berada pada Pengembang, kecuali komponen pihak ketiga sebagaimana dijelaskan pada Pasal 5. Hak Anda atas Perangkat Lunak terbatas pada yang diberikan secara tegas dalam perjanjian ini.
+
+5. KOMPONEN PIHAK KETIGA DAN MODEL AI
+Perangkat Lunak memakai komponen sumber terbuka (antara lain Electron, node-llama-cpp, dan better-sqlite3) yang tunduk pada lisensi masing-masing pemiliknya. Perjanjian ini tidak mengubah lisensi tersebut. Model AI (misalnya Qwen2.5) tidak dibuat oleh Pengembang. Model diunduh atau dipilih oleh Pengguna dan tunduk pada lisensi pembuat model. Pengguna bertanggung jawab memeriksa dan mematuhi lisensi model yang dipakai, termasuk ketentuan penggunaan komersial.
+
+6. KELUARAN AI
+Jawaban, brief, moodboard, dan saran yang dihasilkan Perangkat Lunak dibuat oleh model AI. Keluaran dapat tidak akurat, tidak lengkap, atau mirip dengan karya pihak lain. Pengguna bertanggung jawab meninjau keluaran dan memastikan hak atas hasil kerja (termasuk hak cipta dan merek) sebelum memakainya, terutama untuk keperluan komersial. Keluaran bukan nasihat hukum, keuangan, atau profesional lainnya.
+
+7. DATA DAN PRIVASI
+Perangkat Lunak berjalan di perangkat Anda. Percakapan, memori, koreksi, dan pengaturan disimpan secara lokal di folder data aplikasi pada komputer Anda. Pengembang tidak mengumpulkan atau menerima data tersebut. Koneksi internet hanya dipakai bila Anda memilih mengunduh model AI dari penyedia pihak ketiga (misalnya Hugging Face), yang tunduk pada ketentuan dan kebijakan privasi penyedia tersebut.
+
+8. PEMBARUAN
+Pengembang dapat, tetapi tidak wajib, menyediakan pembaruan. Pembaruan yang diberikan tunduk pada perjanjian ini kecuali disertai perjanjian lain.
+
+9. TANPA JAMINAN
+Sejauh diizinkan oleh hukum yang berlaku, Perangkat Lunak disediakan "SEBAGAIMANA ADANYA" tanpa jaminan apa pun, tersurat maupun tersirat, termasuk jaminan kelayakan untuk diperdagangkan, kesesuaian untuk tujuan tertentu, ketepatan keluaran, dan bebas dari kesalahan.
+
+10. BATASAN TANGGUNG JAWAB
+Sejauh diizinkan oleh hukum yang berlaku, Pengembang tidak bertanggung jawab atas kerugian tidak langsung, insidental, khusus, atau konsekuensial, termasuk hilangnya data, keuntungan, atau peluang usaha, yang timbul dari penggunaan atau ketidakmampuan menggunakan Perangkat Lunak. Anda disarankan mencadangkan data penting Anda.
+
+11. PENGAKHIRAN
+Perjanjian ini berlaku sampai diakhiri. Pengembang dapat mengakhiri lisensi bila Anda melanggar perjanjian ini. Anda dapat mengakhirinya kapan saja dengan menghapus Perangkat Lunak. Setelah berakhir, Anda wajib berhenti menggunakan dan menghapus seluruh salinan Perangkat Lunak. Pasal 3, 4, 5, 9, 10, dan 12 tetap berlaku setelah pengakhiran.
+
+12. HUKUM YANG BERLAKU
+Perjanjian ini tunduk pada hukum Republik Indonesia. Sengketa diselesaikan terlebih dahulu secara musyawarah. Bila tidak tercapai kesepakatan, sengketa diselesaikan melalui pengadilan yang berwenang di Indonesia.
+
+13. KETENTUAN UMUM
+Perjanjian ini merupakan keseluruhan kesepakatan antara Anda dan Pengembang mengenai Perangkat Lunak. Bila ada ketentuan yang dinyatakan tidak sah, ketentuan lainnya tetap berlaku. Kegagalan Pengembang menegakkan suatu hak tidak berarti pelepasan hak tersebut.
+
+Lisensi diberikan kepada pengguna sebagaimana tercantum pada Perangkat Lunak.
+Pengembang: Ari Fitriansyah
